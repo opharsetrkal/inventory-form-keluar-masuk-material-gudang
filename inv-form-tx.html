@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Keluar Masuk Material Gudang — PLN ICON Plus RKAL</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A2240;--navy2:#163660;--yellow:#F5C200;--yellow2:#C49B00;
+  --white:#fff;--g100:#F4F6F9;--g300:#D1D9E0;--g500:#6B7A8D;--g800:#1A2535;
+  --green:#0EA472;--red:#E24B4A;--orange:#F59E0B;--r:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g100);color:var(--g800);display:flex;flex-direction:column;align-items:center;min-height:100vh}
+.page{width:100%;max-width:520px;min-height:100vh;background:var(--white);display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{background:var(--navy);padding:18px 20px 16px}
+.hdr-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hdr-logo{width:36px;height:36px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{font-size:11px;font-weight:600;letter-spacing:.08em;color:rgba(255,255,255,.6);text-transform:uppercase}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;text-transform:uppercase;letter-spacing:.05em}
+.hdr-title{font-size:19px;font-weight:700;color:var(--white);line-height:1.3}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.5}
+
+/* STRIPE */
+.stripe{height:8px;background:repeating-linear-gradient(-45deg,var(--yellow) 0,var(--yellow) 10px,var(--navy) 10px,var(--navy) 20px);flex-shrink:0}
+
+/* SECTION */
+.sec{padding:22px 20px}
+.sec-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g500);margin-bottom:5px}
+.sec-title{font-size:16px;font-weight:700;color:var(--g800);margin-bottom:4px}
+.sec-desc{font-size:13px;color:var(--g500);line-height:1.55;margin-bottom:16px}
+
+/* MODULE 1 */
+.btn-main{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:18px;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s,transform .1s}
+.btn-main:hover{background:var(--navy2)}
+.btn-main:active{transform:scale(.98)}
+.btn-main-icon{width:40px;height:40px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-main-text{text-align:left}
+.btn-main-label{font-size:15px;font-weight:700}
+.btn-main-sub{font-size:11px;font-weight:400;color:rgba(255,255,255,.6);margin-top:2px}
+.steps-info{margin-top:14px;border:1px solid var(--g300);border-radius:var(--r);overflow:hidden}
+.step-info-row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-bottom:.5px solid var(--g300)}
+.step-info-row:last-child{border-bottom:none}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-info-text{font-size:12px;color:var(--g500);line-height:1.5}
+.step-info-text strong{color:var(--g800);font-weight:600}
+
+/* MODULE 2 TRACING */
+.trace-row{display:flex;gap:8px;margin-bottom:8px}
+.trace-input{flex:1;height:44px;border:1.5px solid var(--g300);border-radius:8px;padding:0 14px;font-size:14px;color:var(--g800);outline:none;transition:border-color .15s;background:var(--white)}
+.trace-input:focus{border-color:var(--navy)}
+.trace-input::placeholder{color:var(--g500);font-size:13px}
+.trace-btn{height:44px;padding:0 16px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;white-space:nowrap}
+.trace-btn:hover{background:var(--navy2)}
+.trace-btn:active{transform:scale(.97)}
+.trace-hint{font-size:11px;color:var(--g500);margin-bottom:14px}
+
+/* TRACE RESULT */
+.trace-result{display:none;border:1.5px solid var(--g300);border-radius:var(--r);overflow:hidden;margin-top:4px}
+.trace-result.show{display:block}
+.tr-head{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tr-id{font-size:13px;font-weight:700;color:var(--white)}
+.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.badge-done{background:rgba(14,164,114,.2);color:#0EA472}
+.badge-pending{background:rgba(245,194,0,.2);color:var(--yellow)}
+.tr-body{}
+.tr-kv{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:9px 16px;border-bottom:.5px solid var(--g300)}
+.tr-kv:last-child{border-bottom:none}
+.tr-k{font-size:12px;color:var(--g500);flex-shrink:0;min-width:120px}
+.tr-v{font-size:13px;font-weight:500;color:var(--g800);text-align:right;word-break:break-all}
+.tr-v.link{color:var(--navy);text-decoration:underline;cursor:pointer}
+.tr-divider{padding:8px 16px;background:var(--g100);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g500);border-bottom:.5px solid var(--g300)}
+.tr-step{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:.5px solid var(--g300)}
+.tr-step:last-child{border-bottom:none}
+.sdot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sdot-done{background:var(--green)}
+.sdot-pending{background:var(--g300)}
+.sdot-wait{background:var(--orange)}
+.s-label{font-size:13px;color:var(--g800);flex:1}
+.s-time{font-size:11px;color:var(--g500);text-align:right;min-width:80px}
+.tr-duration{background:#EFF6FF;border-top:.5px solid #BFDBFE;border-bottom:.5px solid #BFDBFE;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.dur-label{font-size:12px;color:#1D4ED8;font-weight:600}
+.dur-val{font-size:13px;font-weight:700;color:#1D4ED8}
+.tr-photo-row{padding:12px 16px;display:flex;gap:8px;border-top:.5px solid var(--g300)}
+.photo-thumb{flex:1;border:1px solid var(--g300);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:background .15s}
+.photo-thumb:hover{background:var(--g100)}
+.photo-icon{font-size:22px;margin-bottom:4px}
+.photo-label{font-size:11px;color:var(--g500);font-weight:500}
+.photo-action{font-size:10px;color:var(--navy);margin-top:2px}
+
+.trace-empty{display:none;text-align:center;padding:24px 16px;color:var(--g500);font-size:13px;border:1.5px dashed var(--g300);border-radius:var(--r);margin-top:4px}
+.trace-empty.show{display:block}
+
+/* MODULE 3 DASHBOARD */
+.dash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.dash-filter{display:flex;gap:6px;flex-wrap:wrap}
+.filter-select{height:34px;border:1.5px solid var(--g300);border-radius:6px;padding:0 10px;font-size:12px;color:var(--g800);background:var(--white);outline:none;cursor:pointer}
+.dash-refresh{height:34px;padding:0 12px;background:var(--navy);color:var(--white);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.dash-refresh:hover{background:var(--navy2)}
+.tbl-wrap{overflow-x:auto;border:1.5px solid var(--g300);border-radius:var(--r);margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+thead tr{background:var(--navy)}
+th{padding:10px 12px;text-align:left;color:rgba(255,255,255,.85);font-size:11px;font-weight:600;letter-spacing:.05em;white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+th:hover{background:var(--navy2)}
+th .sort-icon{margin-left:4px;opacity:.5;font-size:10px}
+th.asc .sort-icon::after{content:'▲'}
+th.desc .sort-icon::after{content:'▼'}
+th:not(.asc):not(.desc) .sort-icon::after{content:'⇅'}
+td{padding:9px 12px;border-bottom:.5px solid var(--g300);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFC}
+.jenis-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.jenis-ambil{background:#DBEAFE;color:#1D4ED8}
+.jenis-serah{background:#D1FAE5;color:#065F46}
+.jenis-konfirmasi{background:#FEF3C7;color:#92400E}
+.status-done{color:var(--green);font-weight:600}
+.status-pending{color:var(--orange);font-weight:600}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pag-info{font-size:12px;color:var(--g500)}
+.pag-btns{display:flex;gap:4px}
+.pag-btn{height:30px;min-width:30px;padding:0 8px;border:1.5px solid var(--g300);border-radius:6px;background:var(--white);font-size:12px;color:var(--g800);cursor:pointer;transition:background .1s}
+.pag-btn:hover:not(:disabled){background:var(--g100)}
+.pag-btn:disabled{opacity:.4;cursor:default}
+.pag-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.dash-loading{text-align:center;padding:24px;color:var(--g500);font-size:13px}
+.dash-empty{text-align:center;padding:24px;color:var(--g500);font-size:13px}
+
+/* FOOTER */
+.footer{margin-top:auto;padding:18px 20px;text-align:center;border-top:.5px solid var(--g300)}
+.footer-text{font-size:11px;color:var(--g500);line-height:1.7}
+.footer-text strong{color:var(--g800)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2240" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">PLN ICON Plus</div>
+      <div class="brand-sub">SBU Regional Kalimantan</div>
+    </div>
+  </div>
+  <div class="hdr-title">Form Keluar Masuk Material Gudang</div>
+  <div class="hdr-sub">Setiap transaksi wajib tercatat. Isi form sebelum material bergerak.</div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- MODULE 1: FORM -->
+<div class="sec">
+  <div class="sec-eyebrow">Langkah 1</div>
+  <div class="sec-title">Catat transaksi</div>
+  <div class="sec-desc">Berlaku untuk mitra, user internal, dan petugas gudang. Satu form untuk semua pihak.</div>
+  <a class="btn-main" href="LINK_GFORM_DISINI" target="_blank">
+    <div class="btn-main-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2240" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+    </div>
+    <div class="btn-main-text">
+      <div class="btn-main-label">Isi Form Transaksi</div>
+      <div class="btn-main-sub">Ambil material · Serah material · Konfirmasi GI/GR</div>
+    </div>
+  </a>
+  <div class="steps-info">
+    <div class="step-info-row">
+      <div class="step-num">1</div>
+      <div class="step-info-text"><strong>Mitra / User</strong> — isi saat tiba di gudang. Pilih [Ambil] atau [Serah], lampirkan foto selfie + foto dokumen.</div>
+    </div>
+    <div class="step-info-row">
+      <div class="step-num">2</div>
+      <div class="step-info-text"><strong>Petugas Gudang</strong> — isi setelah GI/GR diposting di SAP. Gunakan ID Transaksi yang sama. Batas waktu: H+1.</div>
+    </div>
+    <div class="step-info-row">
+      <div class="step-num">3</div>
+      <div class="step-info-text"><strong>Security</strong> — periksa dokumen fisik sebelum material melewati gerbang. Surat jalan, nopol, dan volume wajib sesuai.</div>
+    </div>
+  </div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- MODULE 2: TRACING -->
+<div class="sec">
+  <div class="sec-eyebrow">Langkah 2</div>
+  <div class="sec-title">Lacak status transaksi</div>
+  <div class="sec-desc">Masukkan ID transaksi untuk melihat status, dokumen GI/GR, dan durasi proses.</div>
+  <div class="trace-row">
+    <input class="trace-input" id="traceInput" type="text" placeholder="No. Reservasi, WO, PO, atau SN Perangkat" />
+    <button class="trace-btn" onclick="doTrace()">Cari</button>
+  </div>
+  <div class="trace-hint">Gunakan ID yang sama seperti saat mengisi form di atas.</div>
+
+  <div class="trace-result" id="traceResult">
+    <div class="tr-head">
+      <div class="tr-id" id="trId">—</div>
+      <div class="badge" id="trBadge"></div>
+    </div>
+    <div class="tr-body">
+      <div class="tr-kv"><div class="tr-k">Gudang</div><div class="tr-v" id="trGudang">—</div></div>
+      <div class="tr-kv"><div class="tr-k">Jenis kegiatan</div><div class="tr-v" id="trJenis">—</div></div>
+      <div class="tr-kv"><div class="tr-k">Asal</div><div class="tr-v" id="trAsal">—</div></div>
+      <div class="tr-kv"><div class="tr-k">PIC Asal</div><div class="tr-v" id="trPicAsal">—</div></div>
+      <div class="tr-kv"><div class="tr-k">Tujuan</div><div class="tr-v" id="trTujuan">—</div></div>
+      <div class="tr-kv"><div class="tr-k">PIC Tujuan</div><div class="tr-v" id="trPicTujuan">—</div></div>
+      <div id="trDurWrap" class="tr-duration" style="display:none">
+        <div class="dur-label">⏱ Durasi proses</div>
+        <div class="dur-val" id="trDur">—</div>
+      </div>
+      <div class="tr-divider">Alur transaksi</div>
+      <div class="tr-step">
+        <div class="sdot sdot-done">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="s-label">Form mitra/user terisi</div>
+        <div class="s-time" id="trTime1">—</div>
+      </div>
+      <div class="tr-step">
+        <div class="sdot" id="trStep2dot"></div>
+        <div class="s-label" id="trStep2label">Menunggu konfirmasi petugas</div>
+        <div class="s-time" id="trTime2">Maks. H+1</div>
+      </div>
+      <div class="tr-divider">Dokumen</div>
+      <div class="tr-photo-row">
+        <div class="photo-thumb" id="trPhotoMaterial" onclick="openLink('foto_material')">
+          <div class="photo-icon">📷</div>
+          <div class="photo-label">Foto Material</div>
+          <div class="photo-action">Tap untuk buka</div>
+        </div>
+        <div class="photo-thumb" id="trPhotoDok" onclick="openLink('foto_dok')">
+          <div class="photo-icon">📄</div>
+          <div class="photo-label">Dokumen GI/GR</div>
+          <div class="photo-action" id="trPhotoDokAction">Menunggu petugas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="trace-empty" id="traceEmpty">Nomor tidak ditemukan. Pastikan transaksi sudah dicatat melalui form di atas.</div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- MODULE 3: DASHBOARD -->
+<div class="sec">
+  <div class="sec-eyebrow">Detail Keluar Masuk Gudang</div>
+  <div class="sec-title">Semua transaksi</div>
+  <div class="sec-desc">Data langsung dari Google Sheets. Klik header kolom untuk mengurutkan.</div>
+
+  <div class="dash-head">
+    <div class="dash-filter">
+      <select class="filter-select" id="filterGudang" onchange="applyFilter()">
+        <option value="">Semua Gudang</option>
+        <option>Balikpapan</option>
+        <option>Banjarbaru</option>
+        <option>Palangkaraya</option>
+        <option>Pontianak</option>
+        <option>Samarinda</option>
+      </select>
+      <select class="filter-select" id="filterJenis" onchange="applyFilter()">
+        <option value="">Semua Jenis</option>
+        <option>[Ambil] Reservasi</option>
+        <option>[Ambil] POSTO/WO</option>
+        <option>[Serah] RMA</option>
+        <option>[Serah] POSTO/WO</option>
+        <option>[Konfirmasi] GI</option>
+        <option>[Konfirmasi] GR</option>
+      </select>
+    </div>
+    <button class="dash-refresh" onclick="loadCSV()">↻ Refresh</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table id="dashTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">Waktu <span class="sort-icon"></span></th>
+          <th onclick="sortTable(1)">Gudang <span class="sort-icon"></span></th>
+          <th onclick="sortTable(2)">Asal <span class="sort-icon"></span></th>
+          <th onclick="sortTable(3)">PIC Asal <span class="sort-icon"></span></th>
+          <th onclick="sortTable(4)">Jenis Kegiatan <span class="sort-icon"></span></th>
+          <th onclick="sortTable(5)">Tujuan <span class="sort-icon"></span></th>
+          <th onclick="sortTable(6)">PIC Tujuan <span class="sort-icon"></span></th>
+          <th onclick="sortTable(7)">ID Transaksi <span class="sort-icon"></span></th>
+          <th onclick="sortTable(8)">Status <span class="sort-icon"></span></th>
+        </tr>
+      </thead>
+      <tbody id="dashTbody">
+        <tr><td colspan="9" class="dash-loading">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <div class="pag-info" id="pagInfo">—</div>
+    <div class="pag-btns" id="pagBtns"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-text">
+    <strong>PLN ICON Plus — SBU Regional Kalimantan</strong><br>
+    Form wajib diisi setiap transaksi keluar masuk material. Kendala: hubungi TL Asset &amp; Inventory.
+  </div>
+</div>
+
+</div>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0PjMr0Evt7X1-rXSJMCUtWXnEK6zngE0shxsNbQrXYw4OFzm88MAQLj2yVuHbOs6R6rys0oX91YKB/pub?gid=1415026630&single=true&output=csv';
+const GFORM_URL = 'LINK_GFORM_DISINI';
+
+const DUMMY = [
+  ['7/16/2026 09:14','Balikpapan','Borneo Inovasi Gemilang','Ahmad Fauzi','[Ambil] Reservasi','Gudang Balikpapan','Rizky Pratama','0010012345','https://drive.google.com/file/selfie1','https://drive.google.com/file/dok1',''],
+  ['7/16/2026 11:32','Balikpapan','Gudang Balikpapan','Rizky Pratama','[Konfirmasi] GI','Borneo Inovasi Gemilang','Ahmad Fauzi','0010012345','https://drive.google.com/file/selfie2','https://drive.google.com/file/gi1','Sudah sesuai'],
+  ['7/15/2026 14:05','Samarinda','Infratech Indonesia','Budi Santoso','[Serah] RMA','Gudang Samarinda','Nikida Rahma','SN987654321','https://drive.google.com/file/selfie3','https://drive.google.com/file/dok2','Perangkat rusak fisik'],
+  ['7/14/2026 08:30','Banjarbaru','Pembangunan dan Delivery Layanan','Siti Aminah','[Ambil] POSTO/WO','Gudang Banjarbaru','Rika Handayani','WO-2026-0892','https://drive.google.com/file/selfie4','https://drive.google.com/file/wo1',''],
+  ['7/14/2026 10:45','Banjarbaru','Gudang Banjarbaru','Rika Handayani','[Konfirmasi] GI','Pembangunan dan Delivery Layanan','Siti Aminah','WO-2026-0892','https://drive.google.com/file/selfie5','https://drive.google.com/file/gi2',''],
+];
+
+let allRows = [];
+let filteredRows = [];
+let sortCol = 0;
+let sortDir = 'desc';
+let currentPage = 1;
+const PAGE_SIZE = 10;
+let photoLinks = {};
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g,'').trim());
+    if (cols.length >= 8 && cols[0]) rows.push(cols);
+  }
+  return rows;
+}
+
+async function loadCSV() {
+  document.getElementById('dashTbody').innerHTML = '<tr><td colspan="9" class="dash-loading">Memuat data...</td></tr>';
+  try {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    allRows = rows.length ? rows : DUMMY;
+  } catch(e) {
+    allRows = DUMMY;
+  }
+  applyFilter();
+}
+
+function applyFilter() {
+  const g = document.getElementById('filterGudang').value;
+  const j = document.getElementById('filterJenis').value;
+  filteredRows = allRows.filter(r => {
+    const gudang = r[1] || '';
+    const jenis = r[4] || '';
+    return (!g || gudang === g) && (!j || jenis === j);
+  });
+  sortRows();
+  currentPage = 1;
+  renderTable();
+}
+
+function sortRows() {
+  filteredRows.sort((a,b) => {
+    const va = (a[sortCol] || '').toLowerCase();
+    const vb = (b[sortCol] || '').toLowerCase();
+    if (sortCol === 0) {
+      const da = new Date(a[0]), db = new Date(b[0]);
+      return sortDir === 'asc' ? da - db : db - da;
+    }
+    return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+}
+
+function sortTable(col) {
+  const ths = document.querySelectorAll('th');
+  if (sortCol === col) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortCol = col; sortDir = 'asc';
+  }
+  ths.forEach((th,i) => {
+    th.classList.remove('asc','desc');
+    if (i === col) th.classList.add(sortDir);
+  });
+  sortRows();
+  renderTable();
+}
+
+function jenisBadge(j) {
+  if (!j) return '';
+  if (j.includes('[Ambil]')) return `<span class="jenis-badge jenis-ambil">${j}</span>`;
+  if (j.includes('[Serah]')) return `<span class="jenis-badge jenis-serah">${j}</span>`;
+  if (j.includes('[Konfirmasi]')) return `<span class="jenis-badge jenis-konfirmasi">${j}</span>`;
+  return j;
+}
+
+function computeStatus(rows) {
+  const statusMap = {};
+  rows.forEach(r => {
+    const id = r[7] || '';
+    const jenis = r[4] || '';
+    if (!statusMap[id]) statusMap[id] = {mitra: null, konfirmasi: null};
+    if (jenis.includes('[Konfirmasi]')) statusMap[id].konfirmasi = r;
+    else statusMap[id].mitra = r;
+  });
+  return statusMap;
+}
+
+function formatTs(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  if (isNaN(d)) return ts;
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+    d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function diffDuration(t1, t2) {
+  const d1 = new Date(t1), d2 = new Date(t2);
+  if (isNaN(d1) || isNaN(d2)) return null;
+  const diff = Math.abs(d2 - d1);
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (h >= 24) return Math.floor(h/24) + ' hari ' + (h%24) + ' jam';
+  return h + ' jam ' + m + ' menit';
+}
+
+function renderTable() {
+  const tbody = document.getElementById('dashTbody');
+  const statusMap = computeStatus(allRows);
+
+  if (!filteredRows.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="dash-empty">Belum ada data transaksi.</td></tr>';
+    document.getElementById('pagInfo').textContent = '';
+    document.getElementById('pagBtns').innerHTML = '';
+    return;
+  }
+
+  const total = filteredRows.length;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = Math.min(start + PAGE_SIZE, total);
+  const pageRows = filteredRows.slice(start, end);
+
+  tbody.innerHTML = pageRows.map(r => {
+    const id = r[7] || '';
+    const sm = statusMap[id];
+    const done = sm && sm.konfirmasi;
+    const status = done
+      ? '<span class="status-done">✓ Selesai</span>'
+      : '<span class="status-pending">⏳ Menunggu</span>';
+    return `<tr>
+      <td>${formatTs(r[0])}</td>
+      <td>${r[1]||'—'}</td>
+      <td>${r[2]||'—'}</td>
+      <td>${r[3]||'—'}</td>
+      <td>${jenisBadge(r[4])}</td>
+      <td>${r[5]||'—'}</td>
+      <td>${r[6]||'—'}</td>
+      <td><strong>${id||'—'}</strong></td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('pagInfo').textContent = `${start+1}–${end} dari ${total} entri`;
+
+  let btns = '';
+  btns += `<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  const maxBtn = Math.min(totalPages, 5);
+  let startBtn = Math.max(1, currentPage - 2);
+  let endBtn = Math.min(totalPages, startBtn + maxBtn - 1);
+  if (endBtn - startBtn < maxBtn - 1) startBtn = Math.max(1, endBtn - maxBtn + 1);
+  for (let i = startBtn; i <= endBtn; i++) {
+    btns += `<button class="pag-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  btns += `<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  document.getElementById('pagBtns').innerHTML = btns;
+}
+
+function goPage(p) {
+  const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  renderTable();
+}
+
+function doTrace() {
+  const val = document.getElementById('traceInput').value.trim();
+  const result = document.getElementById('traceResult');
+  const empty = document.getElementById('traceEmpty');
+  result.classList.remove('show');
+  empty.classList.remove('show');
+  if (!val) return;
+
+  const statusMap = computeStatus(allRows);
+  const sm = statusMap[val];
+  if (!sm || !sm.mitra) { empty.classList.add('show'); return; }
+
+  const m = sm.mitra;
+  const k = sm.konfirmasi;
+  const done = !!k;
+
+  document.getElementById('trId').textContent = val;
+  document.getElementById('trGudang').textContent = m[1] || '—';
+  document.getElementById('trJenis').textContent = m[4] || '—';
+  document.getElementById('trAsal').textContent = m[2] || '—';
+  document.getElementById('trPicAsal').textContent = m[3] || '—';
+  document.getElementById('trTujuan').textContent = m[5] || '—';
+  document.getElementById('trPicTujuan').textContent = m[6] || '—';
+  document.getElementById('trTime1').textContent = formatTs(m[0]);
+
+  const badge = document.getElementById('trBadge');
+  const step2dot = document.getElementById('trStep2dot');
+  const step2label = document.getElementById('trStep2label');
+  const durWrap = document.getElementById('trDurWrap');
+
+  if (done) {
+    badge.textContent = 'Selesai'; badge.className = 'badge badge-done';
+    step2dot.className = 'sdot sdot-done';
+    step2dot.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    step2label.textContent = 'Konfirmasi petugas gudang';
+    document.getElementById('trTime2').textContent = formatTs(k[0]);
+    const dur = diffDuration(m[0], k[0]);
+    if (dur) { durWrap.style.display='flex'; document.getElementById('trDur').textContent = dur; }
+    else durWrap.style.display='none';
+    document.getElementById('trPhotoDokAction').textContent = 'Tap untuk buka & unduh';
+    photoLinks.foto_dok = k[9] || '';
+  } else {
+    badge.textContent = 'Menunggu konfirmasi'; badge.className = 'badge badge-pending';
+    step2dot.className = 'sdot sdot-wait';
+    step2dot.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="3" fill="#F59E0B"/></svg>';
+    step2label.textContent = 'Menunggu konfirmasi petugas gudang';
+    document.getElementById('trTime2').textContent = 'Maks. H+1';
+    durWrap.style.display = 'none';
+    document.getElementById('trPhotoDokAction').textContent = 'Menunggu petugas';
+    photoLinks.foto_dok = '';
+  }
+
+  photoLinks.foto_material = m[8] || '';
+  result.classList.add('show');
+}
+
+function openLink(key) {
+  const url = photoLinks[key];
+  if (!url) { alert('Dokumen belum tersedia. Menunggu konfirmasi petugas gudang.'); return; }
+  window.open(url, '_blank');
+}
+
+document.getElementById('traceInput').addEventListener('keydown', e => { if (e.key==='Enter') doTrace(); });
+
+loadCSV();
+</script>
+</body>
+</html>
