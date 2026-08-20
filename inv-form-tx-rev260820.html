@@ -354,11 +354,28 @@ let currentPage = 1;
 const PAGE_SIZE = 10;
 let photoLinks = {};
 
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (ch === ',' && !inQuote) {
+      result.push(cur.trim());
+      cur = '';
+    } else { cur += ch; }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g,'').trim());
+    const cols = parseCSVLine(lines[i]);
     if (cols.length >= 8 && cols[0]) rows.push(cols);
   }
   return rows;
