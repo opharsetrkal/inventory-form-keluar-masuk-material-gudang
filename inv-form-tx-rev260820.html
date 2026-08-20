@@ -409,13 +409,18 @@ function parseCSV(text) {
 }
 
 async function loadCSV() {
-  document.getElementById('dashTbody').innerHTML = '<tr><td colspan="9" class="dash-loading">Memuat data...</td></tr>';
+  document.getElementById('dashTbody').innerHTML = '<tr><td colspan="10" class="dash-loading">Memuat data...</td></tr>';
+  document.getElementById('alertCount').textContent = '⏳ Memuat...';
   try {
-    const res = await fetch(CSV_URL);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(CSV_URL, { signal: controller.signal });
+    clearTimeout(timeout);
     const text = await res.text();
     allRows = parseCSV(text);
   } catch(e) {
     allRows = [];
+    document.getElementById('dashTbody').innerHTML = '<tr><td colspan="10" class="dash-empty">Gagal memuat data. Cek koneksi atau refresh halaman.</td></tr>';
   }
   applyFilter();
 }
@@ -544,7 +549,7 @@ function renderTable() {
   const statusMap = computeStatus(allRows);
 
   if (!filteredRows.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="dash-empty">Belum ada data transaksi.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="dash-empty">Belum ada data transaksi.</td></tr>';
     document.getElementById('pagInfo').textContent = '';
     document.getElementById('pagBtns').innerHTML = '';
     return;
