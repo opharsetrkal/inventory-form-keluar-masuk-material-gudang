@@ -12,7 +12,7 @@
   --green:#0EA472;--red:#E24B4A;--orange:#F59E0B;--r:12px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g100);color:var(--g800);display:flex;flex-direction:column;align-items:center;min-height:100vh}
-.page{width:100%;max-width:520px;min-height:100vh;background:var(--white);display:flex;flex-direction:column}
+.page{width:100%;max-width:800px;min-height:100vh;background:var(--white);display:flex;flex-direction:column;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.08)}
 
 /* HEADER */
 .hdr{background:var(--white);padding:16px 20px 16px;border-bottom:2px solid var(--navy)}
@@ -134,6 +134,21 @@ tr:hover td{background:#F8FAFC}
 .pag-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
 .dash-loading{text-align:center;padding:24px;color:var(--g500);font-size:13px}
 .dash-empty{text-align:center;padding:24px;color:var(--g500);font-size:13px}
+
+/* ALERT MODULE */
+.alert-module{}
+.alert-count{display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#92400E;margin-bottom:14px}
+.alert-cards{display:flex;flex-direction:column;gap:10px}
+.alert-card{border:1.5px solid #F59E0B;border-radius:var(--r);padding:14px 16px;background:#FFFBEB;position:relative;overflow:hidden}
+.alert-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#F59E0B}
+.alert-card-id{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.alert-card-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
+.alert-card-label{font-size:11px;color:var(--g500)}
+.alert-card-val{font-size:12px;font-weight:500;color:var(--g800);text-align:right}
+.alert-card-footer{margin-top:8px;padding-top:8px;border-top:.5px solid #FDE68A;display:flex;justify-content:space-between;align-items:center}
+.alert-card-time{font-size:11px;color:var(--g500)}
+.alert-card-gudang{font-size:11px;font-weight:600;color:var(--navy);background:#EFF6FF;padding:2px 8px;border-radius:10px}
+.alert-empty{text-align:center;padding:20px;color:var(--green);font-size:13px;font-weight:600;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:var(--r)}
 
 /* FOOTER */
 .footer{margin-top:auto;padding:18px 20px;text-align:center;border-top:.5px solid var(--g300)}
@@ -275,7 +290,18 @@ tr:hover td{background:#F8FAFC}
 
 <div class="stripe"></div>
 
-<!-- MODULE 3: DASHBOARD -->
+<!-- MODULE 3a: ALERT BELUM DIPROSES -->
+<div class="sec">
+  <div class="sec-eyebrow">Perlu Perhatian</div>
+  <div class="sec-title">Transaksi Belum Dikonfirmasi</div>
+  <div class="sec-desc">Transaksi yang belum mendapat konfirmasi GI/GR dari petugas gudang.</div>
+  <div id="alertCount" class="alert-count">⏳ Memuat...</div>
+  <div class="alert-cards" id="alertCards"></div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- MODULE 3b: DASHBOARD -->
 <div class="sec">
   <div class="sec-eyebrow">Detail Keluar Masuk Gudang</div>
   <div class="sec-title">Semua transaksi</div>
@@ -316,7 +342,8 @@ tr:hover td{background:#F8FAFC}
           <th onclick="sortTable(5)">Tujuan <span class="sort-icon"></span></th>
           <th onclick="sortTable(6)">PIC Tujuan <span class="sort-icon"></span></th>
           <th onclick="sortTable(7)">ID Transaksi <span class="sort-icon"></span></th>
-          <th onclick="sortTable(8)">Status <span class="sort-icon"></span></th>
+          <th onclick="sortTable(12)">Status <span class="sort-icon"></span></th>
+          <th onclick="sortTable(15)">Durasi <span class="sort-icon"></span></th>
         </tr>
       </thead>
       <tbody id="dashTbody">
@@ -354,24 +381,46 @@ let currentPage = 1;
 const PAGE_SIZE = 10;
 let photoLinks = {};
 
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (ch === ',' && !inQuote) {
+      result.push(cur.trim());
+      cur = '';
+    } else { cur += ch; }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g,'').trim());
+    const cols = parseCSVLine(lines[i]);
     if (cols.length >= 8 && cols[0]) rows.push(cols);
   }
   return rows;
 }
 
 async function loadCSV() {
-  document.getElementById('dashTbody').innerHTML = '<tr><td colspan="9" class="dash-loading">Memuat data...</td></tr>';
+  document.getElementById('dashTbody').innerHTML = '<tr><td colspan="10" class="dash-loading">Memuat data...</td></tr>';
+  document.getElementById('alertCount').textContent = '⏳ Memuat...';
   try {
-    const res = await fetch(CSV_URL);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(CSV_URL, { signal: controller.signal });
+    clearTimeout(timeout);
     const text = await res.text();
     allRows = parseCSV(text);
   } catch(e) {
     allRows = [];
+    document.getElementById('dashTbody').innerHTML = '<tr><td colspan="10" class="dash-empty">Gagal memuat data. Cek koneksi atau refresh halaman.</td></tr>';
   }
   applyFilter();
 }
@@ -386,6 +435,7 @@ function applyFilter() {
   });
   sortRows();
   currentPage = 1;
+  renderAlerts();
   renderTable();
 }
 
@@ -454,12 +504,52 @@ function diffDuration(t1, t2) {
   return h + ' jam ' + m + ' menit';
 }
 
+function renderAlerts() {
+  const alertCards = document.getElementById('alertCards');
+  const alertCount = document.getElementById('alertCount');
+  const alerts = allRows.filter(r => (r[16] || '').includes('Belum Diproses'));
+
+  alertCount.textContent = alerts.length > 0
+    ? `⚠ ${alerts.length} transaksi belum dikonfirmasi`
+    : '✅ Semua transaksi sudah dikonfirmasi';
+  alertCount.style.background = alerts.length > 0 ? '#FEF3C7' : '#F0FDF4';
+  alertCount.style.borderColor = alerts.length > 0 ? '#F59E0B' : '#86EFAC';
+  alertCount.style.color = alerts.length > 0 ? '#92400E' : '#166534';
+
+  if (!alerts.length) {
+    alertCards.innerHTML = '<div class="alert-empty">✅ Semua transaksi sudah mendapat konfirmasi GI/GR.</div>';
+    return;
+  }
+
+  alertCards.innerHTML = alerts.map(r => `
+    <div class="alert-card">
+      <div class="alert-card-id">📋 ${r[7] || '—'}</div>
+      <div class="alert-card-row">
+        <div class="alert-card-label">Asal</div>
+        <div class="alert-card-val">${r[2] || '—'}</div>
+      </div>
+      <div class="alert-card-row">
+        <div class="alert-card-label">PIC Asal</div>
+        <div class="alert-card-val">${r[3] || '—'}</div>
+      </div>
+      <div class="alert-card-row">
+        <div class="alert-card-label">Jenis</div>
+        <div class="alert-card-val">${(r[4]||'').split('—')[0].trim()}</div>
+      </div>
+      <div class="alert-card-footer">
+        <div class="alert-card-time">🕐 ${formatTs(r[0])}</div>
+        <div class="alert-card-gudang">${r[1] || '—'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
 function renderTable() {
   const tbody = document.getElementById('dashTbody');
   const statusMap = computeStatus(allRows);
 
   if (!filteredRows.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="dash-empty">Belum ada data transaksi.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="dash-empty">Belum ada data transaksi.</td></tr>';
     document.getElementById('pagInfo').textContent = '';
     document.getElementById('pagBtns').innerHTML = '';
     return;
@@ -473,13 +563,15 @@ function renderTable() {
   const pageRows = filteredRows.slice(start, end);
 
   tbody.innerHTML = pageRows.map(r => {
-    const id = r[7] || '';
-    const sm = statusMap[id];
-    const done = sm && sm.konfirmasi;
-    const status = done
-      ? '<span class="status-done">✓ Selesai</span>'
-      : '<span class="status-pending">⏳ Menunggu</span>';
-    return `<tr>
+    const status = r[12] || '—';
+    const durasi = r[15] || '—';
+    const flag = r[16] || '';
+    const rowStyle = flag.includes('Belum') ? 'background:#FFFBEB;' : '';
+    let statusHtml = '—';
+    if (status === 'Selesai') statusHtml = '<span class="status-done">✓ Selesai</span>';
+    else if (status === 'Belum Diproses') statusHtml = '<span class="status-pending">⏳ Belum Diproses</span>';
+    else if (status === '—') statusHtml = '<span style="color:var(--g300)">—</span>';
+    return `<tr style="${rowStyle}">
       <td>${formatTs(r[0])}</td>
       <td>${r[1]||'—'}</td>
       <td>${r[2]||'—'}</td>
@@ -487,8 +579,9 @@ function renderTable() {
       <td>${jenisBadge(r[4])}</td>
       <td>${r[5]||'—'}</td>
       <td>${r[6]||'—'}</td>
-      <td><strong>${id||'—'}</strong></td>
-      <td>${status}</td>
+      <td><strong>${r[7]||'—'}</strong></td>
+      <td>${statusHtml}</td>
+      <td>${durasi}</td>
     </tr>`;
   }).join('');
 
